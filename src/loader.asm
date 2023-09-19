@@ -2,8 +2,12 @@
 [ORG 0x7e00] // Global Offset do Boot
 
 start:
+    ; Limpeza de Terminal
+    mov ah, 0x00
+    int 10h
+
 ; Referências:
-;      https:;en.wikipedia.org/wiki/INT_10H    
+;      https//en.wikipedia.org/wiki/INT_10H    
     mov ah, 0x13 ; Write string (EGA+, meaning PC AT minimum) 
     mov al, 0x01 ; Write Mode = True
     mov bx, 0x0a
