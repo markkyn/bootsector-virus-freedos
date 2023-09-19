@@ -8,21 +8,34 @@ start:
     mov ss, ax
     mov sp, 0x7c00
 
+TestDiskExtension:
+    mov [DriveId], dl
+    mov ah, 0x41
+    mov bx, 0x55aa
+    int 0x13
+    jc NotSupport
+    cmp bx, 0xaa55
+    jne NotSupport
+
 PrintMessage:
     mov ah, 0x13
     mov al, 0x01
     mov bx, 0x0a
     xor dx, dx
-    mov bp, Hello
-    mov cx, Hello_len
+    mov bp, Disk_message
+    mov cx, Disk_len
     int 0x10
 
+NotSupport:
+
+
 End:
-    jlt
+    hlt
     jmp End
 
-Hello: db "Hello"
-MessageLen: equ $-Hello
+DriveId:    db 0
+Disk_message: db "Disco Suportado", 0
+Disk_len: equ $-Disk_message
 
 
 times (0x1be - ($-$$)) db 0
