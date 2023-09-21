@@ -60,7 +60,7 @@ ReadError_len: equ $-ReadError_message
 ReadPacket: times 16 db 0
 
 
-; Padding de BIOS
+; Padding
 times (0x1be - ($-$$)) db 0
 
     db 80h
@@ -72,5 +72,6 @@ times (0x1be - ($-$$)) db 0
 
     times (16*3) db 0
 
+    ; Limite do Disco
     db 0x55
     db 0xaa 
