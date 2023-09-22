@@ -1,0 +1,4 @@
+Making an OS (x86) Chapter 6 - Entering Protected mode, GDT
+    - https://www.youtube.com/watch?v=Wh5nPn2U_1w
+Global Descriptor Table
+    - https://wiki.osdev.org/GDT
