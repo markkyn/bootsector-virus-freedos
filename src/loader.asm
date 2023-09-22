@@ -45,6 +45,7 @@ start:
     mov al, 0x01 ; Write Mode = True
     mov bx, 0x0a
     xor dx, dx
+    xor dh, 0x01
     mov bp, longmode_message ; Ponteiro de String 
     mov cx, longmode_len     ; Numero de Caracteres
     int 10h
@@ -89,20 +90,14 @@ MemoryMapLoop:
     jnz MemoryMapLoop
 
 MemoryMapDone:
-   ; Print("Loader Carregado com Sucesso")
+   ; Print("MemoryMap concluido")
     mov ah, 0x13 ; Write string (EGA+, meaning PC AT minimum) 
     mov al, 0x01 ; Write Mode = True
     mov bx, 0x0a
     xor dx, dx
+    mov dh, 0x02
     mov bp, memorymap_msg ; Ponteiro de String 
     mov cx, memorymap_len ; Numero de Caracteres
-    int 10h
-
-    mov ah, 0x02
-    mov bh, 0x00
-    mov dh, 1
-    mov dl, 0
-    
     int 10h
 
 ReadError:
