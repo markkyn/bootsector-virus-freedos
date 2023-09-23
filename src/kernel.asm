@@ -1,20 +1,37 @@
-[BITS 64]
-[ORG 0x200000]
+section .data
+Gdt64:
+    dq 0
+    dq 0x0020980000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
+    dq 0x0020F80000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
+    dq 0x0000F20000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
 
+Gdt64Len: equ $-Gdt64
+Gdt64Ptr: dw Gdt64Len-1
+          dq Gdt64
+
+
+section .text
+extern kernel_main
+global start
 start:
+    lgdt [Gdt64Ptr]
+    
+    push 8
+    push kernel_entry
+    db 0x48
+    retf
+
+kernel_entry:
     mov byte[0xb8000],'K'
     mov byte[0xb8001],0xa
 
-    lgdt [Gdt64Ptr]
+    mov rsp, 0x200000
 
-    retf
+    call kernel_main ; Integração com C
+
 End:
     hlt
     jmp End
 
-Gdt64:
-    dq 0
-    dq 0x0020980000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
-Gdt64Len: equ $-Gdt64
-Gdt64Ptr: dw Gdt64Len-1
-          dq Gdt64
+user_end:
+    jmp user_end
