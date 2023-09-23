@@ -11,3 +11,6 @@
 
 ### Ativação de Long Mode:
     https://wiki.osdev.org/Setting_Up_Long_Mode
+
+## Interrupt Descriptor Table
+    https://wiki.osdev.org/Interrupt_Descriptor_Table
