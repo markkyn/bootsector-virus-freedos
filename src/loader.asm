@@ -102,6 +102,7 @@ End:
     jmp End
 
 
+
 [BITS 32] ; FINALMENTE ESTAMOS EM 32 BITS!!!!!!
 start_protected_mode:
     mov ax, 0x10
@@ -110,16 +111,65 @@ start_protected_mode:
     mov ss, ax
     mov esp, 0x7c00 ; ponteiro para o carregamento do Boot
 
-    mov al, 'P'
-    mov ah, 0x0F
+    ;mov al, 'P'
+    ;mov ah, 0x0F
 
-    mov [0xb8000], ax ; 0xb8000 está o VideoMemory
+    ;mov [0xb8000], ax ; 0xb8000 está o VideoMemory
 
+    prepare_long_mode:
+        cld
+        mov edi,0x70000
+        xor eax,eax
+        mov ecx,0x10000/4
+        rep stosd
 
-protected_mode_inf_loop:
+        mov dword[0x70000],0x71007
+        mov dword[0x71000],10000111b
+
+        lgdt [Gdt64Ptr]
+
+        mov eax,cr4
+        or eax,(1<<5)
+        mov cr4,eax
+
+        mov eax,0x70000
+        mov cr3,eax
+
+        mov ecx,0xc0000080
+        rdmsr
+        or eax,(1<<8)
+        wrmsr
+
+        mov eax,cr0
+        or eax,(1<<31)
+        mov cr0,eax
+
+        jmp 8:start_long_mode
+    
+
+protected_mode_loop:
     hlt
-    jmp protected_mode_inf_loop
+    jmp protected_mode_loop
 
+
+[BITS 64] ; 64 bits, a modernidade chegou
+start_long_mode:
+    mov rsp, 0x7c00
+    ;mov byte[0xb8000], 'L'; 0xb8000 está o VideoMemory
+    ;mov byte[0xb8001], 0x0F
+
+    ; Carregamento do Kernel por 
+    cld
+    mov rdi,0x200000
+    mov rsi,0x10000
+    mov rcx,51200/8
+    rep movsq
+
+    jmp 0x200000
+
+long_mode_loop:
+    hlt
+    jmp long_mode_loop
 
 ; Outras Var Globals
 DriveId: db 0
@@ -158,10 +208,14 @@ GDT_descriptor:
     dw GDT_end - GDT - 1    ; Tamanho da tabela
     dd GDT                  ; ponteiro para o inicio
 
+Gdt64:
+    dq 0
+    dq 0x0020980000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
+Gdt64Len: equ $-Gdt64
+Gdt64Ptr: dw Gdt64Len-1
+          dd Gdt64
 
 code_seg_len equ code32_descriptor - GDT
 data_seg_len equ data_descriptor - GDT
-
-
 IDT_descriptor: dw 0
                 dd 0

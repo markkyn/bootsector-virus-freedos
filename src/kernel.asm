@@ -1,19 +1,20 @@
-[ORG 0x1000]
-
+[BITS 64]
+[ORG 0x200000]
 
 start:
-    ; Print("Loader Carregado com Sucesso")
-    mov ah, 0x13 ; Write string (EGA+, meaning PC AT minimum) 
-    mov al, 0x01 ; Write Mode = True
-    mov bx, 0x0a
-    xor dx, dx
-    mov bp, kernel_message ; Ponteiro de String 
-    mov cx, kernel_len     ; Numero de Caracteres
-    int 10h
+    mov byte[0xb8000],'K'
+    mov byte[0xb8001],0xa
 
+    lgdt [Gdt64Ptr]
+
+    retf
 End:
     hlt
     jmp End
 
-kernel_message: db "Kernel File Carregado!", 0
-kernel_len: equ $-kernel_message
+Gdt64:
+    dq 0
+    dq 0x0020980000000000 ; Ambos os segmentos definidos aqui, mas o data nao usamos
+Gdt64Len: equ $-Gdt64
+Gdt64Ptr: dw Gdt64Len-1
+          dq Gdt64
