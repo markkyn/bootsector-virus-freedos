@@ -10,9 +10,9 @@ nasm -f elf64 ./src/kernel/mem_lib.asm -o ./bin/mem_lib.o
 
 # Kernel files
 gcc -std=c99 -mcmodel=large -ffreestanding -fno-stack-protector -mno-red-zone -c ./src/kernel/main.c -o ./bin/main.o
-
+gcc -std=c99 -mcmodel=large -ffreestanding -fno-stack-protector -mno-red-zone -c ./src/kernel/print_lib.c -o ./bin/print_lib.o
 # Linking
-ld -nostdlib -T ./src/link.lds -o ./lib/kernel ./bin/kernel.o ./bin/main.o ./bin/mem_lib.o
+ld -nostdlib -T ./src/link.lds -o ./lib/kernel ./bin/kernel.o ./bin/main.o ./bin/mem_lib.o ./bin/print_lib.o
 objcopy -O binary ./lib/kernel ./bin/kernel.bin
 
 # Image Updating
