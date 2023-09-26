@@ -14,10 +14,12 @@ section .text
 extern kernel_main
 global start
 start:
-    lgdt [Gdt64Ptr]
+    mov rax, Gdt64Ptr
+    lgdt [rax]
     
+    mov rax, kernel_entry
     push 8
-    push kernel_entry
+    push rax
     db 0x48
     retf
 
@@ -25,7 +27,7 @@ kernel_entry:
     mov byte[0xb8000],'K'
     mov byte[0xb8001],0xa
 
-    mov rsp, 0x200000
+    mov rsp, 0xffff800000200000
 
     call kernel_main ; Integração com C
 

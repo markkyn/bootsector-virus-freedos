@@ -53,20 +53,25 @@ MermoryMap: ; Int 15h
     mov eax,0xe820
     mov edx,0x534d4150
     mov ecx,20
-    mov edi,0x9000
+    mov dword[0x9000], 0
+    mov edi,0x9008
     xor ebx,ebx
     int 0x15
     jc NotSupport
+
 MemoryMapLoop:
     add edi,20
+    inc dword[0x9000]
+
+    test ebx,ebx
+    jz MemoryMapDone
+
     mov eax,0xe820
     mov edx,0x534d4150
     mov ecx,20
     int 0x15
-    jc MemoryMapDone
+    jnc MemoryMapLoop
 
-    test ebx,ebx
-    jnz MemoryMapLoop
 
 MemoryMapDone:
     
@@ -85,7 +90,6 @@ ProtectedMode:
 ;   - Disable interrupts, including NMI (as suggested by Intel Developers Manual).
 ;   - Enable the A20 Line.
 ;    - Load the Global Descriptor Table with segment descriptors suitable for code, data, and stack.   
-
     cli ; Desativando Interrupções
     lgdt [GDT_descriptor]
     lidt [IDT_descriptor]
@@ -123,8 +127,14 @@ start_protected_mode:
         mov ecx,0x10000/4
         rep stosd
 
-        mov dword[0x70000],0x71007
-        mov dword[0x71000],10000111b
+        mov dword[0x70000], 0x71003
+        mov dword[0x71000], 10000011b 
+
+        ; Transferência de Kernel na memoria virtual para o topo da memoria.
+        mov eax, (0xffff800000000000>>39)
+        and eax, 0x1ff
+        mov dword[0x70000+eax*8], 0x72003 
+        mov dword[0x72000], 10000011b
 
         lgdt [Gdt64Ptr]
 
@@ -165,7 +175,9 @@ start_long_mode:
     mov rcx,51200/8
     rep movsq
 
-    jmp 0x200000
+    mov rax, 0xffff800000200000
+    jmp rax
+    ;jmp 0x200000
 
 long_mode_loop:
     hlt
