@@ -20,6 +20,6 @@ ld -nostdlib -T ./src/link.lds -o ./lib/kernel ./bin/kernel.o ./bin/main.o ./bin
 objcopy -O binary ./lib/kernel ./bin/kernel.bin
 
 # Image Updating
-dd if=./bin/boot.bin   of=boot.img bs=512 count=1 conv=notrunc
-dd if=./bin/loader.bin of=boot.img bs=512 count=5 seek=1 conv=notrunc
-dd if=./bin/kernel.bin of=boot.img bs=512 count=100 seek=6 conv=notrunc
+dd if=./bin/boot.bin   of=./build/boot.img bs=512 count=1 conv=notrunc
+dd if=./bin/loader.bin of=./build/boot.img bs=512 count=5 seek=1 conv=notrunc
+dd if=./bin/kernel.bin of=./build/boot.img bs=512 count=100 seek=6 conv=notrunc
