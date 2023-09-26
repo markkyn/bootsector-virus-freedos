@@ -1,0 +1,1 @@
+qemu-system-i386 -hda ../freedos/freedos.img -m 16 -boot order=c
