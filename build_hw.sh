@@ -8,6 +8,9 @@ nasm -f elf64 ./src/boot/kernel.asm -o ./bin/kernel.o
 # Criando Floppy Disk Zerado
 dd if=/dev/zero of=floppy.flp bs=512 count=2880
 
+# Criando Floppy Disk Zerado
+dd if=/dev/zero of=floppy.flp bs=512 count=2880
+
 # Libs
 nasm -f elf64 ./src/kernel/mem_lib.asm -o ./bin/mem_lib.o
 
