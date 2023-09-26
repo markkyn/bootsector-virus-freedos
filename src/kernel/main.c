@@ -2,6 +2,7 @@
 #include "stddef.h"
 #include "headers/mem_lib.h"
 #include "headers/print_lib.h"
+#include "headers/mmap_lib.h"
 
 typedef void (*boot_ptr)();
 
@@ -19,9 +20,10 @@ void kernel_main(void)
     origin_ptr_test[0] = 'X';
     origin_ptr_test[1] = 0xa;
 
-    k_memcpy(video_mem_ptr, origin_ptr_test, 2);
+    // Testes de Libs
+    //k_memcpy(video_mem_ptr, origin_ptr_test, 2); // OK
+    // k_write('J', 0x0A, 0, 4); // OK
+    init_memory(); // não 100% testado
 
-    k_write(0x5, 0x0F, 0, 4);
-    // boot_ptr jump_to_boot = (boot_ptr)0x200000;
-    // jump_to_boot();
+
 }
