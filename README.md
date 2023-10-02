@@ -1,7 +1,7 @@
 # x86-IHS-OS
 
 ## Contexto:
-Esse projeto, realizado no período 2023.1 da Universidade Federal de Sergipe para disciplina de Interface Hardware-Software, tem como objetivo criar um sitema operacional mínimo do zero. 
+Esse projeto, realizado no período 2023.1 da Universidade Federal de Sergipe para disciplina de Interface Hardware-Software, tem como objetivo criar um virus de seção de boot (BootSector) que seja executado e persistido em uma imagem de FreeDOS. 
 
 O projeto utiliza majoritariamente conceitos de Computação em Baixo Nível aprendidos em sala de aula.
 
