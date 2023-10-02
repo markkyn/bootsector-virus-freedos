@@ -10,7 +10,7 @@ O projeto utiliza majoritariamente conceitos de Computação em Baixo Nível apr
 
 
 ## Instruções de Instalação e Execução do Virus:
-### Realize a instalação da imagem do FreeDOS:
+### 🛠️ Realize a instalação da imagem do FreeDOS:
 - Baixa a imagem ISO do FreeDOS (FD13LIVE.iso)
 - Utilizando "**qemu-img**" crie uma imagem virtual de 100MB no diretório **./src/freedos/freedos.img** , esse será o arquivo utilizado para instalação e infecção do FreeDOS.
 
@@ -31,7 +31,7 @@ qemu-system-i386 -hda freedos.img -cdrom FD13LIVE.iso -m 16 -boot order=d -enabl
 qemu-system-i386 -hda ../freedos/freedos.img -m 16 -boot order=c -enable-kvm
 ```
 
-### Execução do Virus:
+### 🦠 Execução do Virus:
 - Uma vez no repositório, acesse o diretorio:
 ```shell
 cd ./src/virus
@@ -52,6 +52,9 @@ cd ./src/virus
 ./virus.sh
 ```
 
-### Análise de Infecção
-Utilizando algum 
-
+### ☠️ Análise de Infecção:
+Utilizando algum leitor de hexadecimal, analise a imagem do FreeDOS.
+Lá você poderá observar a asinatura do vírus, mostrando que a infecção ocorreu com sucesso.
+```
+Qual o proposito de existência humana?(ಥ _ ಥ)
+```
