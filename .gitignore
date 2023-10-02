@@ -1,3 +1,7 @@
 boot.img
 bochsrc.bxrc
 boot.img.lock
+*.bin
+*.img
+*.flp
+*.o
