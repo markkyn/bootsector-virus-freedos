@@ -66,23 +66,28 @@ memory_persistence:
 
     dec word [ds:0x0413] ; Reduz 1 KB de Memoria
     mov ax, [ds:0x0413]  ; AX recebe a quantidade de memoria
-    shl ax, 6            ; Dá um ShiftLeft para   
+    shl ax, 6            ; Dá um ShiftLeft para receber o segmento do topo
     mov es, ax
 
     mov dl, [DriverID]
-    mov si, transfer_bytes
-    xor di, di
+    mov si, transfer_bytes ; da função transfer_bytes
+    xor di, di             ; para di = 0x00 
 
-    mov cx, end_cpy
-    sub cx, transfer_bytes
-    rep movsb
+    mov cx, end_cpy       ;   end_cpy = Fim da copia 
+    sub cx, transfer_bytes; - transfer_bytes temos o tamanho dos codigo a ser transferido
+    rep movsb      ; com a instrução rep e cx = quantidade de bytes a serem transferidos
+                   ; copiamos as instruções para o segmento
 
-    push es
+    push es ; Sempre lembrar que ES é um registrador de segmento
     push word 0x0000
     retf
 
 
-end_cpy
+transfer_bytes:
+    xor ax, ax
+    mov es, ax
+
+end_cpy:
 DriverID db 0
 
 disks:
