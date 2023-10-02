@@ -94,11 +94,5 @@ disks:
 db "Qual o proposito de existência humana?(ಥ _ ಥ)"
 
 times (0x1b4 - ($-$$)) db 0
-part_table:
-UID times 10 db 0             ; unique disk ID
-PT1 times 16 db 0             ; first partition entry
-PT2 times 16 db 0             ; second partition entry
-PT3 times 16 db 0             ; third partition entry
-PT4 times 16 db 0             ; fourth partition entry
 
 dw 0xAA55
