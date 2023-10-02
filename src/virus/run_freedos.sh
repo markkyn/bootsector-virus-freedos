@@ -1,1 +1,1 @@
-qemu-system-i386 -hda ../freedos/freedos.img -m 16 -boot order=c
+qemu-system-i386 -hda ../freedos/freedos.img -fda ../../build/floppy.flp -m 16 -boot order=c
