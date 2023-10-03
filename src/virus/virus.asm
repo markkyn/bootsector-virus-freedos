@@ -67,13 +67,13 @@ memory_persistence:
     dec word [ds:0x0413] ; Reduz 1 KB de Memoria
     mov ax, [ds:0x0413]  ; AX recebe a quantidade de memoria
     shl ax, 6            ; Dá um ShiftLeft para receber o segmento do topo
-    mov es, ax
+    mov es, ax           ; ES = Segment Register
 
     mov dl, [DriverID]
     mov si, transfer_bytes ; da função transfer_bytes
     xor di, di             ; para di = 0x00 
 
-    mov cx, end_cpy       ;   end_cpy = Fim da copia 
+    mov cx, transfer_end       ;   end_cpy = Fim da copia 
     sub cx, transfer_bytes; - transfer_bytes temos o tamanho dos codigo a ser transferido
     rep movsb      ; com a instrução rep e cx = quantidade de bytes a serem transferidos
                    ; copiamos as instruções para o segmento
@@ -81,13 +81,27 @@ memory_persistence:
     push es ; Sempre lembrar que ES é um registrador de segmento
     push word 0x0000
     retf
-
-
 transfer_bytes:
     xor ax, ax
     mov es, ax
 
-end_cpy:
+    mov ah, 0x02
+    mov al, 0x01
+    xor cx, cx
+    mov cl, 0x02
+    mov bx, 0x7c00
+    int 13h
+
+    
+    popa
+    sti
+    jmp 0x0:0x7c00
+
+; FIM do transfer_bytes
+transfer_end:
+
+
+
 DriverID db 0
 
 disks:
@@ -98,6 +112,15 @@ disks:
 
 db "Qual o proposito de existência humana?(ಥ _ ಥ)"
 
-times (0x1b4 - ($-$$)) db 0
-
-dw 0xAA55
+; Padding de BIOS
+padding:
+    times (0x1be - ($-$$)) db 0
+    db 80h
+    db 0,2,0
+    db 0F0H
+    db 0FFH, 0FFh, 0FFH
+    dd 1
+    dd (20*16*63-1)
+    
+    times (16*3) db 0
+    dw 0xAA55
