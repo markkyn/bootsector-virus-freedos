@@ -1,6 +1,5 @@
-;[ORG 0x100]
 [BITS 16]
-[ORG 0x7c00]
+[ORG 0x100]
 
 section .text
 

