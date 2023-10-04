@@ -32,7 +32,7 @@ qemu-system-i386 -hda ../freedos/freedos.img -m 16 -boot order=c -enable-kvm
 ```
 
 ### 🦠 Execução do Virus:
-- Uma vez no repositório, acesse o diretorio:
+- Uma vez no repositório, acesse o diretorio dos arquivos do virus:
 ```shell
 cd ./src/virus
 ```
@@ -47,9 +47,19 @@ cd ./src/virus
 ./infect_floppydisk.sh
 ```
 
-- Execute o virus
+- Execute o virus, com esse comando vc irá infectar o sistema operacional e carregar o payload de 512B
 ```shell
 ./virus.sh
+```
+
+- Ao rodar novamente o Sistema Operacional, ele estará infectado: **MuaHAHAHA!** ( *Onomatopeia de Risada maligna* )
+```
+./run_freedos.sh
+```
+
+- Utilize o comando a seguir para retornar ao ponto de backup da imagem
+```
+./restore.sh
 ```
 
 ### ☠️ Análise de Infecção:
