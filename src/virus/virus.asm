@@ -134,14 +134,14 @@ interrupt:
     pusha
     mov ah, 0x0E
 
-    mov dx, [cs:kio_counter-transfer_bytes]
+    ;mov dx, [cs:kio_counter-transfer_bytes]
     
-    inc dx
-    cmp dx, 500
+    ;inc dx
+    ;cmp dx, 500
     
-    jl interrupt_end
+    ;jl interrupt_end
 
-    mov word [cs:kio_counter-transfer_bytes], 0
+    ;mov word [cs:kio_counter-transfer_bytes], 0
     xor di, di
     letter_by_letter:
 
@@ -153,7 +153,7 @@ interrupt:
         jle letter_by_letter
 
     interrupt_end:
-        mov word [cs:kio_counter-transfer_bytes], dx
+        ;mov word [cs:kio_counter-transfer_bytes], dx
 
         popa
         
