@@ -42,6 +42,11 @@ cd ./src/virus
 ./backup.sh
 ```
 
+- Verifique se o Freedos está rodando normalmente
+```shell
+./run_freedos.sh
+```
+
 - Realize a montagem do floppydisk
 ```shell
 ./infect_floppydisk.sh
